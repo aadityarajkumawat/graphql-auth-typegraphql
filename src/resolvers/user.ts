@@ -13,6 +13,18 @@ import {
 import argon2 from "argon2";
 
 @InputType()
+class UserDetailsInput {
+  @Field()
+  username: string;
+  @Field()
+  password: string;
+  @Field()
+  name: string;
+  @Field()
+  phone: string;
+}
+
+@InputType()
 class UsernamePasswordInput {
   @Field()
   username: string;
@@ -48,7 +60,7 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg("options") options: UsernamePasswordInput,
+    @Arg("options") options: UserDetailsInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     if (options.username.length <= 2) {
@@ -77,12 +89,14 @@ export class UserResolver {
     const user = await em.create(User, {
       username: options.username,
       password: hashedPassword,
+      name: options.name,
+      phone: options.phone,
     });
 
     try {
       await em.persistAndFlush(user);
     } catch (err) {
-      if (err.code === "23505") {
+      if (err.detail.includes("username")) {
         return {
           errors: [
             {

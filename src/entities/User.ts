@@ -23,4 +23,12 @@ export class User {
   @Field()
   @Property({ type: "text" })
   password!: string;
+
+  @Field()
+  @Property({ type: "text" })
+  name!: string;
+
+  @Field()
+  @Property({ type: "text", length: 10 })
+  phone!: string;
 }

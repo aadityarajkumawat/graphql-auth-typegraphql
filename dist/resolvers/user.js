@@ -28,6 +28,27 @@ exports.UserResolver = void 0;
 const User_1 = require("../entities/User");
 const type_graphql_1 = require("type-graphql");
 const argon2_1 = __importDefault(require("argon2"));
+let UserDetailsInput = class UserDetailsInput {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UserDetailsInput.prototype, "username", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UserDetailsInput.prototype, "password", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UserDetailsInput.prototype, "name", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", String)
+], UserDetailsInput.prototype, "phone", void 0);
+UserDetailsInput = __decorate([
+    type_graphql_1.InputType()
+], UserDetailsInput);
 let UsernamePasswordInput = class UsernamePasswordInput {
 };
 __decorate([
@@ -100,12 +121,14 @@ let UserResolver = class UserResolver {
             const user = yield em.create(User_1.User, {
                 username: options.username,
                 password: hashedPassword,
+                name: options.name,
+                phone: options.phone,
             });
             try {
                 yield em.persistAndFlush(user);
             }
             catch (err) {
-                if (err.code === "23505") {
+                if (err.detail.includes("username")) {
                     return {
                         errors: [
                             {
@@ -161,7 +184,7 @@ __decorate([
     __param(0, type_graphql_1.Arg("options")),
     __param(1, type_graphql_1.Ctx()),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [UsernamePasswordInput, Object]),
+    __metadata("design:paramtypes", [UserDetailsInput, Object]),
     __metadata("design:returntype", Promise)
 ], UserResolver.prototype, "register", null);
 __decorate([
